@@ -6,7 +6,7 @@
 .global _entry
 _entry:
         # task: setup a per-CPU stack for C and jump to start() function
-        sp = bl_stack + (hartid * 4096)
+        # sp = bl_stack + (hartid * 4096)
         la sp, bl_stack
         li a0, 1024*4
         csrr a1, mhartid
