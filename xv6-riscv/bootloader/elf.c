@@ -19,7 +19,7 @@ uint64 find_kernel_load_addr(enum kernel ktype) {
     // Get the offset, phoff in the elfhdr
     uint64 offset = kernel_elfhdr -> phoff;
     // Get the size of the program header
-    ushort program_hdr_size = kernel_elfhdr -> phsize;
+    ushort program_hdr_size = kernel_elfhdr -> ehsize;
     // Program header section
     unit64 text_section_addr = RAMDISK + offset + program_hdr_size;
     kernel_phdr = (struct proghdr*)text_section_addr; 
