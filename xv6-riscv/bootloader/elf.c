@@ -13,7 +13,18 @@ struct proghdr* kernel_phdr;
 
 uint64 find_kernel_load_addr(enum kernel ktype) {
     /* CSE 536: Get kernel load address from headers */
-    return 0;
+    
+    // point to RAMDISK
+    kernel_elfhdr = (struct elfhdr*)RAMDISK;
+    // Get the offset, phoff in the elfhdr
+    uint64 offset = kernel_elfhdr -> phoff;
+    // Get the size of the program header
+    ushort program_hdr_size = kernel_elfhdr -> phsize;
+    // Program header section
+    text_section_addr = RAMDISK + offset + program_hdr_size;
+    kernel_phdr = (struct proghdr*)text_section_addr; 
+    // Starting address of the text section, vaddr
+    return kernel_phdr -> vaddr;
 }
 
 uint64 find_kernel_size(enum kernel ktype) {
