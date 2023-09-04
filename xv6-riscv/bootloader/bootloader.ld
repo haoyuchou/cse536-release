@@ -11,26 +11,38 @@ SECTIONS
   /* Task lay out the sections as mentioned in the handout */
   .text :
     {
-      *(.text)
-      _etext = .;
+      *(.text .text.*)
+      . = ALIGN(0x1000);
+      PROVIDE(etext = .);
     }
   
   .data :
     {
-      *(.data)
-      _data = .;
+      . = ALIGN(16);
+      *(.sdata .sdata.*)
+      . = ALIGN(16);
+      *(.data .data.*)
+      PROVIDE(edata = .);
     }
   
   .rodata :
     {
-      *(.rodata)
-      _rodata = .;
+      . = ALIGN(16);
+      *(.srodata .srodata.*)
+      . = ALIGN(16);
+      *(.rodata .rodata.*)
+      PROVIDE(erodata = .);
     }
   
   .bss :
     {
-      *(.bss)
-      _ebss = .;
+      . = ALIGN(16);
+      *(.sbss .sbss.*)
+      . = ALIGN(16);
+      *(.bss .bss.*)
+      PROVIDE(ebss = .);
     }
+  
+  PROVIDE(end = .);
 
 }
