@@ -14,7 +14,7 @@ _entry:
         la a1, STSIZE
         # csrr a1, mhartid
         mul a2 ,a0, a1
-        # addi a2, a2, 1
+        addi a2, a2, 1
         add sp, sp, a2
         # jump to start() in start.c
         call start
