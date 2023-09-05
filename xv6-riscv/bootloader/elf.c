@@ -29,6 +29,7 @@ uint64 find_kernel_load_addr(enum kernel ktype) {
 
 uint64 find_kernel_size(enum kernel ktype) {
     /* CSE 536: Get kernel binary size from headers */
+    // kernel1 is 278,088 bytes
     return 0;
 }
 
