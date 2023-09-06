@@ -147,11 +147,11 @@ void start()
  
  out:
   /* CSE 536: Provide system information to the kernel. */
-  sys_info_ptr.bl_stack = 0x80000000;
-  sys_info_ptr.bl_end = 0x80065848;
+  sys_info_ptr -> bl_stack = 0x80000000;
+  sys_info_ptr -> bl_end = 0x80065848;
   // starting and ending address of the DRAM
-  sys_info_ptr.dr_start = 0x80065849;
-  sys_info_ptr.dr_end = 0x88000000;
+  sys_info_ptr -> dr_start = 0x80065849;
+  sys_info_ptr -> dr_end = 0x88000000;
 
   /* CSE 536: Send the observed hash value to the kernel (using sys_info_ptr) */
 
