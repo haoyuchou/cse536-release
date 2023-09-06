@@ -81,7 +81,7 @@ void copyKernelTo(uint64 copySize, uint64 copyToAddress)
     // kernel_copy copy BSIZE every time
     kernel_copy(NORMAL, &buffer);
     // copy from buffer to copyToAddress
-    memmove((char*)copyToAddress, buffer.data, BSIZE)
+    memmove((char*)copyToAddress, buffer.data, BSIZE);
     // update buffer number
     blockno ++;
     sizeCopied = sizeCopied + BSIZE;
