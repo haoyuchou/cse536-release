@@ -65,6 +65,29 @@ bool is_secure_boot(void) {
   return verification;
 }
 
+void copyKernelTo(uint64 copySize, uint64 copyToAddress)
+{
+  // use the kernel_copy function to copy from buffer to kerenl
+  int blockno = 0;
+  // exclude atleast the kernel ELF header (first 4KB) 
+  int offset = 4;
+  //blockno = blockno + offset;
+  int sizeCopied = 0;
+  struct buf buffer;
+  while (sizeCopied < copySize){
+    // exclude first 4 kb
+    buffer.blockno = blockno + offset;
+    // void kernel_copy(enum kernel ktype, struct buf *b)
+    // kernel_copy copy BSIZE every time
+    kernel_copy(NORMAL, &buffer);
+    // copy from buffer to copyToAddress
+    memmove((char*)copyToAddress, buffer.data, BSIZE)
+    // update buffer number
+    blockno ++;
+    sizeCopied = sizeCopied + BSIZE;
+  }
+}
+
 // entry.S jumps here in machine mode on stack0.
 void start()
 {
@@ -111,8 +134,11 @@ void start()
   }
   
   /* CSE 536: Load the NORMAL kernel binary (assuming secure boot passed). */
-  // uint64 kernel_load_addr       = find_kernel_load_addr(NORMAL);
-  // uint64 kernel_binary_size     = find_kernel_size(NORMAL);     
+  // this function return the address of kernload_start
+  uint64 kernel_load_addr       = find_kernel_load_addr(NORMAL);
+  uint64 kernel_binary_size     = find_kernel_size(NORMAL); 
+  // copy the kernel binary to kernload-start 
+  copyKernelTo(kernel_binary_size, kernel_load_addr);   
   uint64 kernel_entry           = find_kernel_entry_addr(NORMAL);
   
   /* CSE 536: Write the correct kernel entry point */

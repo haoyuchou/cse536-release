@@ -30,10 +30,21 @@ uint64 find_kernel_load_addr(enum kernel ktype) {
 uint64 find_kernel_size(enum kernel ktype) {
     /* CSE 536: Get kernel binary size from headers */
     // kernel1 is 278,088 bytes
-    return 0;
+    // obtain the size using ELF header
+
+    // point to RAMDISK, where the kernel is currently loaded
+    kernel_elfhdr = (struct elfhdr*)RAMDISK;
+     // https://stackoverflow.com/questions/2995347/how-can-i-find-the-size-of-a-elf-file-image-with-header-information
+    // e_shoff + ( e_shentsize * e_shnum )
+    uint64 offset = kernel_elfhdr -> shoff;
+    ushort shentsize = kernel_elfhdr -> shentsize;
+    ushort shnum = kernel_elfhdr -> shnum;
+
+    return offset + (shentsize * shnum);
 }
 
 uint64 find_kernel_entry_addr(enum kernel ktype) {
     /* CSE 536: Get kernel entry point from headers */
-    return 0;
+    kernel_elfhdr = (struct elfhdr*)RAMDISK;
+    return kernel_elfhdr -> entry;
 }
