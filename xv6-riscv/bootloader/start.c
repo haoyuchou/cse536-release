@@ -120,7 +120,7 @@ void start()
   #if defined(KERNELPMP1)
   // bootloader-start: 0x80000000
     // use 54 bits
-    w_pmpaddr0(0x8001E0000ULL);
+    w_pmpaddr0(0x21D40000);
     // sets all permission bits (read, write, and execute) and the A field to the top-of-range.
     w_pmpcfg0(0xf);
   #endif
