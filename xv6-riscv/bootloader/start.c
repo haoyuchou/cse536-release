@@ -68,20 +68,20 @@ bool is_secure_boot(void) {
 void copyKernelTo(uint64 copySize, uint64 copyToAddress)
 {
   // use the kernel_copy function to copy from buffer to kerenl
-  int blockno = 4;
+  int blockno = 0;
   // exclude atleast the kernel ELF header (first 4KB) 
-  //int offset = 4;
+  int offset = 4;
   //blockno = blockno + offset;
   int sizeCopied = 0;
   struct buf buffer;
   while (sizeCopied < copySize){
     // exclude first 4 kb
-    buffer.blockno = blockno;
+    buffer.blockno = blockno + offset;
     // void kernel_copy(enum kernel ktype, struct buf *b)
     // kernel_copy copy BSIZE every time
     kernel_copy(NORMAL, &buffer);
     // copy from buffer to copyToAddress
-    uint64 target_address = copyToAddress + (blockno * BSIZE)
+    uint64 target_address = copyToAddress + (blockno * BSIZE);
     memmove((char*)target_address, buffer.data, BSIZE);
     // update buffer number
     blockno ++;
