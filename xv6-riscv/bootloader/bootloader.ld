@@ -11,22 +11,22 @@ SECTIONS
   .text : 
   { 
   *(.text) 
-  PROVIDE(etext = 0x0000000080008000);
+  PROVIDE(ecode = 0x80008000);
   }
   .data : 
   { 
   *(.data) 
-  PROVIDE(edata = 0x0000000080008044);
+  PROVIDE(edata = 0x80008044);
   }
   .rodata : 
   { 
   *(.rodata) 
-  PROVIDE(erodata = 0x0000000080008990);
+  PROVIDE(erodata = 0x80008990);
   }
   .bss : 
   { 
   *(.bss)
-  PROVIDE(ebss = 0x0000000080021E40); 
+  PROVIDE(ebss = 0x80021E40); 
   }
   PROVIDE(end = 0x80065848);
 }
