@@ -68,20 +68,20 @@ bool is_secure_boot(void) {
 void copyKernelTo(uint64 copySize, uint64 copyToAddress)
 {
   // use the kernel_copy function to copy from buffer to kerenl
-  int blockno = 0;
+  int blockno = 4;
   // exclude atleast the kernel ELF header (first 4KB) 
-  int offset = 4;
+  //int offset = 4;
   //blockno = blockno + offset;
   int sizeCopied = 0;
   struct buf buffer;
   while (sizeCopied < copySize){
     // exclude first 4 kb
-    buffer.blockno = blockno + offset;
+    buffer.blockno = blockno;
     // void kernel_copy(enum kernel ktype, struct buf *b)
     // kernel_copy copy BSIZE every time
     kernel_copy(NORMAL, &buffer);
     // copy from buffer to copyToAddress
-    uint64 target_address = copyToAddress + (blockno * BSIZE);
+    uint64 target_address = copyToAddress + ((blockno - 4) * BSIZE);
     memmove((char*)target_address, buffer.data, BSIZE);
     // update buffer number
     blockno ++;
@@ -120,7 +120,8 @@ void start()
   #if defined(KERNELPMP1)
   // bootloader-start: 0x80000000
     w_pmpaddr0(0x0ull);
-    w_pmpcfg0(0x0);
+    // sets all permission bits (read, write, and execute) and the A field to the top-of-range.
+    w_pmpcfg0(0xf);
   #endif
 
   /* CSE 536: With kernelpmp2, isolate 118-120 MB and 122-126 MB using NAPOT */ 
