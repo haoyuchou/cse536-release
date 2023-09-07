@@ -118,7 +118,7 @@ void start()
 
   /* CSE 536: With kernelpmp1, isolate upper 10MBs using TOR */ 
   #if defined(KERNELPMP1)
-  // bootloader-start: 0x80000000
+  // bootloader-start: 0x80000000 + 117MB
     // use 54 bits
     w_pmpaddr0(0x21D40000);
     // sets all permission bits (read, write, and execute) and the A field to the top-of-range.
@@ -127,8 +127,18 @@ void start()
 
   /* CSE 536: With kernelpmp2, isolate 118-120 MB and 122-126 MB using NAPOT */ 
   #if defined(KERNELPMP2)
-    w_pmpaddr0(0x0ull);
-    w_pmpcfg0(0x0);
+  // set up access until 118 MB
+    w_pmpaddr0(0x21D80000);
+    // 118-120MB, isolated
+    w_pmpaddr1(0x21DBFFFF);
+    // 120-122MB, start 120MB, decimal: 2273312768
+    w_pmpaddr2(0x21E3FFFF);
+    // 122-126MB, isolated
+    w_pmpaddr3(0x21EFFFFE);
+    //126-128MB
+    w_pmpaddr4(0x21FBFFFF);
+    // 0f: read, write, execute, f is 16, which means have all access, 18, 1 means use NAPTO entry
+    w_pmpcfg0(0x1f181f180f);
   #endif
 
   /* CSE 536: Verify if the kernel is untampered for secure boot */
