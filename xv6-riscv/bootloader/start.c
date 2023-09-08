@@ -133,8 +133,8 @@ void start()
     w_pmpaddr1(0x21DBFFFF);
     // 120-122MB, start 120MB, decimal: 2273312768
     w_pmpaddr2(0x21E3FFFF);
-    // 122-126MB, isolated
-    w_pmpaddr3(0x21EFFFFE);
+    // 122-126MB, isolated, start 122MB
+    w_pmpaddr3(0x43D7FFFF);
     //126-128MB
     w_pmpaddr4(0x21FBFFFF);
     // 0f: read, write, execute, f is 16, which means have all access, 18, 1 means use NAPTO entry
