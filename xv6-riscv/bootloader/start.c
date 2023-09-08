@@ -172,7 +172,7 @@ void start()
   //if (!is_secure_boot()) {
     /* Skip loading since we should have booted into a recovery kernel 
      * in the function is_secure_boot() */
-    goto out;
+    //goto out;
   //}
 
   if (is_secure_boot()){
