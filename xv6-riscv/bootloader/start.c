@@ -71,7 +71,7 @@ bool is_secure_boot(void) {
     setup_recovery_kernel();*/
   // compare expected_kernel_measurement to observed_kernel_measurement
   for (int i = 0; i<32; i++){
-    if (sys_info_ptr -> observed_kernel_measurement[i] != sys_info_ptr -> expected_kernel_measurement){
+    if (sys_info_ptr -> observed_kernel_measurement[i] != sys_info_ptr -> expected_kernel_measurement[i]){
       return false;
     }
   }
