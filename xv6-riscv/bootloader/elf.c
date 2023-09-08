@@ -11,17 +11,26 @@
 struct elfhdr* kernel_elfhdr;
 struct proghdr* kernel_phdr;
 
+uint64 get_addr(enum kernel ktype){
+    if(ktype == NORMAL){
+        return RAMDISK;
+    }
+    else{
+        return RECOVERYDISK;
+    }
+}
+
 uint64 find_kernel_load_addr(enum kernel ktype) {
     /* CSE 536: Get kernel load address from headers */
     
     // point to RAMDISK
-    kernel_elfhdr = (struct elfhdr*)RAMDISK;
+    kernel_elfhdr = (struct elfhdr*)get_addr(ktype);
     // Get the offset, phoff in the elfhdr
     uint64 offset = kernel_elfhdr -> phoff;
     // Get the size of the program header
-    ushort program_hdr_size = kernel_elfhdr -> ehsize;
+    ushort program_hdr_size = kernel_elfhdr -> phentsize;
     // Program header section
-    uint64 text_section_addr = RAMDISK + offset + program_hdr_size;
+    uint64 text_section_addr = get_addr(ktype) + offset + program_hdr_size;
     kernel_phdr = (struct proghdr*)text_section_addr; 
     // Starting address of the text section, vaddr
     return kernel_phdr -> vaddr;
@@ -45,6 +54,6 @@ uint64 find_kernel_size(enum kernel ktype) {
 
 uint64 find_kernel_entry_addr(enum kernel ktype) {
     /* CSE 536: Get kernel entry point from headers */
-    kernel_elfhdr = (struct elfhdr*)RAMDISK;
+    kernel_elfhdr = (struct elfhdr*)get_addr(ktype);
     return kernel_elfhdr -> entry;
 }
