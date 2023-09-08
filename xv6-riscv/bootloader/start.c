@@ -79,7 +79,7 @@ bool is_secure_boot(void) {
   return true;
 }
 
-void copyKernelTo(uint64 copySize, uint64 copyToAddress, enum kerenl ktype)
+void copyKernelTo(uint64 copySize, uint64 copyToAddress, enum kernel ktype)
 {
   // use the kernel_copy function to copy from buffer to kerenl
   int blockno = 4;
