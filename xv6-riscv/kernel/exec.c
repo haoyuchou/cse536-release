@@ -20,6 +20,16 @@ int flags2perm(int flags)
     return perm;
 }
 
+bool is_on_demand(char *path){
+  // all except init and sh
+  if (strncmp(path, "/init", strlen(path)) != 0 && strncmp(path, "sh", strlen(path)) != 0){
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 int
 exec(char *path, char **argv)
 {
@@ -33,7 +43,7 @@ exec(char *path, char **argv)
   struct proc *p = myproc();
 
   /* CSE 536: (2.1) Check on-demand status. */
-  if (p->ondemand == true) {
+  if (is_on_demand(path)) {
     print_ondemand_proc(path);
   }
 
@@ -60,20 +70,30 @@ exec(char *path, char **argv)
     if(readi(ip, 0, (uint64)&ph, off, sizeof(ph)) != sizeof(ph))
       goto bad;
     if(ph.type != ELF_PROG_LOAD)
+    // if this segment should be loaded into memory
       continue;
     if(ph.memsz < ph.filesz)
+      // make sure there is enough memory space
       goto bad;
     if(ph.vaddr + ph.memsz < ph.vaddr)
+    // doesn't overflow
       goto bad;
     if(ph.vaddr % PGSIZE != 0)
+    // virtual address is aligned to the page
       goto bad;
 
+    if (is_on_demand(path)){
+      // skip loading
+      print_skip_section(path, ph.vaddr, ph.memsz);
+    }
+    else{
     uint64 sz1;
     if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
       goto bad;
     sz = sz1;
     if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)
       goto bad;
+    }
   }
   iunlockput(ip);
   end_op();
