@@ -10,6 +10,7 @@
 // static 
 int loadseg(pde_t *, uint64, struct inode *, uint, uint);
 
+// convert into permission mask
 int flags2perm(int flags)
 {
     int perm = 0;
@@ -153,6 +154,7 @@ exec(char *path, char **argv)
   p->sz = sz;
   p->trapframe->epc = elf.entry;  // initial program counter = main
   p->trapframe->sp = sp; // initial stack pointer
+  p->ondemand = is_on_demand(path);
   proc_freepagetable(oldpagetable, oldsz);
 
   // CSE 536: Clear all heap track regions

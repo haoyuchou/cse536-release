@@ -79,7 +79,13 @@ void page_fault_handler(void)
     bool load_from_disk = false;
 
     /* Find faulting address. */
-    uint64 faulting_addr = 0;
+     // stval register
+    uint64 faulting_addr = r_stval();
+    // base address, find by 
+    // right- shifting and left-shifting the page offset-related bits
+    // the offset bit is from 0 to 11
+    uint64 base_addr = ((faulting_addr >> 12) << 12); 
+   
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */

@@ -51,8 +51,11 @@ usertrap(void)
 
   // save user program counter.
   p->trapframe->epc = r_sepc();
+
+  // page fault exceptions have specific codes in the scause register.
+  uint64 scause = r_scause();
   
-  if(r_scause() == 8){
+  if(scause == 8){ // environment call
     // system call
 
     if(killed(p))
@@ -67,8 +70,10 @@ usertrap(void)
     intr_on();
 
     syscall();
-  } else if((which_dev = devintr()) != 0){
-    // ok
+    // 12 instruction page fault, 13 load page fault, 15 store/AMO page fault
+  } else if(scause == 12 || scause == 13 || scause == 15){
+    // redirect to page_fault_handler
+    page_fault_handler();
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);
     printf("            sepc=%p stval=%p\n", r_sepc(), r_stval());
