@@ -23,12 +23,7 @@ int flags2perm(int flags)
 
 bool is_on_demand(char *path){
   // all except init and sh
-  if (strncmp(path, "/init", strlen(path)) != 0 && strncmp(path, "sh", strlen(path)) != 0){
-    return true;
-  }
-  else{
-    return false;
-  }
+  return strncmp(path, "/init", strlen(path)) && strncmp(path, "sh", strlen(path));
 }
 
 int
