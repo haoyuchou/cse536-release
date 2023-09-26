@@ -102,13 +102,13 @@ void page_fault_handler(void)
 
   // Check ELF header
   readi(ip, 0, (uint64)&elf, 0, sizeof(elf));
-  printf("read elf header");
+  // printf("read elf header");
 
   /// Iterate through each program section header (using the binary’s ELF)
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
     // start from offset
     readi(ip, 0, (uint64)&ph, off, sizeof(ph));
-    printf("read from offset");
+    //printf("read from offset");
     if(ph.type != ELF_PROG_LOAD)
       continue;
 
