@@ -121,7 +121,7 @@ void page_fault_handler(void)
     /* If it came here, it is a page from the program binary that we must load. */
     print_load_seg(faulting_addr, ph.off, ph.memsz);  
   }
-  iunlock(ip);
+  iunlockput(ip);
   end_op();
 
     /* Go to out, since the remainder of this code is for the heap. */
