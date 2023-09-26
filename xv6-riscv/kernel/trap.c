@@ -73,6 +73,7 @@ usertrap(void)
     // 12 instruction page fault, 13 load page fault, 15 store/AMO page fault
   } else if(scause == 12 || scause == 13 || scause == 15){
     // redirect to page_fault_handler
+    printf("transit to page fault handler");
     page_fault_handler();
   } else {
     printf("usertrap(): unexpected scause %p pid=%d\n", r_scause(), p->pid);

@@ -80,11 +80,11 @@ void page_fault_handler(void)
 
     /* Find faulting address. */
      // stval register
-    uint64 exact_byte__addr = r_stval();
+    uint64 exact_byte_addr = r_stval();
     // base address, find by 
     // right- shifting and left-shifting the page offset-related bits
     // the offset bit is from 0 to 11
-    uint64 faulting_addr = ((exact_byte__addr >> 12) << 12); 
+    uint64 faulting_addr = ((exact_byte_addr >> 12) << 12); 
    
     print_page_fault(p->name, faulting_addr);
 
@@ -103,10 +103,10 @@ void page_fault_handler(void)
   // Check ELF header
   readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf);
     
-  // Load program into memory.
+  /// Iterate through each program section header (using the binary’s ELF)
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
+    // start from offset
     readi(ip, 0, (uint64)&ph, off, sizeof(ph));
-    // Iterate through each program section header (using the binary’s ELF).
     if(ph.type != ELF_PROG_LOAD)
       continue;
 
