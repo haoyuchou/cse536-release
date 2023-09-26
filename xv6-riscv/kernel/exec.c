@@ -82,20 +82,22 @@ exec(char *path, char **argv)
     if(ph.vaddr % PGSIZE != 0)
     // virtual address is aligned to the page
       goto bad;
-
+      
+    uint64 sz1;
     if (is_on_demand(path)){
       // skip loading
+      sz1 = ph.vaddr + ph.memsz;
       print_skip_section(path, ph.vaddr, ph.memsz);
     }
     else{
-    uint64 sz1;
+    // update old size to new size
     if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
       goto bad;
-    // new size  
-    sz = sz1;
     if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)
       goto bad;
     }
+    // new size  
+    sz = sz1;
   }
   iunlockput(ip);
   end_op();
