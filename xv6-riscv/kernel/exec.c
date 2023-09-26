@@ -23,7 +23,12 @@ int flags2perm(int flags)
 
 bool is_on_demand(char *path){
   // all except init and sh
-  return strncmp(path, "/init", strlen(path)) && strncmp(path, "sh", strlen(path));
+  if (strncmp(path, "/init", strlen(path)) != 0 && strncmp(path, "sh", strlen(path)) != 0){
+    return true;
+  }
+  else{
+    return false;
+  }
 }
 
 int
@@ -78,21 +83,21 @@ exec(char *path, char **argv)
     // virtual address is aligned to the page
       goto bad;
       
-    uint64 sz1;
+    uint64 newSz;
     if (is_on_demand(path)){
       // skip loading
-      sz1 = ph.vaddr + ph.memsz;
+      newSz = ph.vaddr + ph.memsz;
       print_skip_section(path, ph.vaddr, ph.memsz);
     }
     else{
     // update old size to new size
-    if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
+    if((newSz = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz, flags2perm(ph.flags))) == 0)
       goto bad;
     if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)
       goto bad;
     }
     // new size  
-    sz = sz1;
+    sz = newSz;
   }
   iunlockput(ip);
   end_op();
