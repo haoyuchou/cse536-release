@@ -101,7 +101,7 @@ void page_fault_handler(void)
     ilock(ip);
 
   // Check ELF header
-  readi(ip, 0, (uint64)&elf, 0, sizeof(elf)) != sizeof(elf);
+  readi(ip, 0, (uint64)&elf, 0, sizeof(elf));
     
   /// Iterate through each program section header (using the binary’s ELF)
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
