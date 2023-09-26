@@ -109,12 +109,12 @@ void page_fault_handler(void)
     // start from offset
     readi(ip, 0, (uint64)&ph, off, sizeof(ph));
     //printf("read from offset");
-    if(ph.type != ELF_PROG_LOAD)
-      continue;
+    if(ph.type != ELF_PROG_LOAD){
+      continue;}
 
     // constraint for vitual address
-    if(faulting_addr < ph.vaddr || faulting_addr > (ph.vaddr + ph.memsz))
-        continue;  
+    if(faulting_addr < ph.vaddr || faulting_addr > (ph.vaddr + ph.memsz)){
+        continue;}  
 
     uvmalloc(p -> pagetable, faulting_addr, ph.vaddr + ph.memsz, flags2perm(ph.flags));
     loadseg(p -> pagetable, ph.vaddr, ip, ph.off, ph.filesz);
