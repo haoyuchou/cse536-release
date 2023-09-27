@@ -112,7 +112,9 @@ void page_fault_handler(void)
     if(ph.type != ELF_PROG_LOAD){
       continue;}
 
-    // constraint for vitual address
+    // check if base address of faulting address is within the range of 
+    // the program segment's virtual address (ph.vaddr) 
+    // and its virtual address plus memory size (ph.vaddr + ph.memsz)
     if(faulting_addr < ph.vaddr || faulting_addr > (ph.vaddr + ph.memsz)){
         continue;}  
 

@@ -99,6 +99,7 @@ exec(char *path, char **argv)
     // new size  
     sz = newSz;
   }
+  
   iunlockput(ip);
   end_op();
   ip = 0;
