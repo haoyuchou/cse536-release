@@ -118,8 +118,9 @@ struct proc {
 
   /* CSE 536: Variables defined for assignment #2. */
   bool                    ondemand;
-  struct heap_tracker_t   heap_tracker[MAXHEAP];
+  struct heap_tracker_t   heap_tracker[MAXHEAP]; // max is 1000 pages
   int                     resident_heap_pages;
+  int                     used_heap_page_tracker;
   
   int cow_group;               // The group of processes sharing memory
   int cow_enabled;             // CoW enabled

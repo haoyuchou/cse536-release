@@ -275,7 +275,7 @@ int
 growproc(int n)
 {
   uint64 sz;
-  struct proc *p = myproc();
+  struct proc *p = myproc(); // this is from the current CPU
 
   /* CSE 536: (2.3) Instead of allocating pages, make these allocations
    * on-demand. Also, keep track of all allocated heap pages. 
@@ -283,8 +283,29 @@ growproc(int n)
 
   /* CSE 536: For simplicity, I've made all allocations at page-level. */
   n = PGROUNDUP(n);
-
   sz = p->sz;
+
+  if (p->ondemand){
+    // prevent allocating pages for on-demand process
+    // track of every heap page allocated to the process in growproc
+    int pages;
+    for(int pages=0; pages<n; pages += PGSIZE){
+      // track the virtual address of each heap page.
+      // virtual address tart from sz
+      p->heap_tracker[p->used_heap_page_tracker].addr = p->sz;
+      p->heap_tracker[p->used_heap_page_tracker].loaded = false;
+      p->heap_tracker[p->used_heap_page_tracker].last_load_time = 0xFFFFFFFFFFFFFFFF;
+      p->heap_tracker[p->used_heap_page_tracker].startblock = -1;
+      p->used_heap_page_tracker ++;
+      // update, used for tracking heap virtual address
+      p->sz += PGSIZE;
+      
+    }
+    pages = (int)(pages/PGSIZE);
+    print_skip_heap_region(p->name, sz, pages);
+    return 0;
+  }
+  
   if(n > 0){
     if((sz = uvmalloc(p->pagetable, sz, sz + n, PTE_W)) == 0) {
       return -1;

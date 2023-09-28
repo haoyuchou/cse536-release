@@ -89,7 +89,16 @@ void page_fault_handler(void)
     print_page_fault(p->name, faulting_addr);
 
     /* Check if the fault address is a heap page. Use p->heap_tracker */
-    if (false) {
+    // used heap_tracker, track faulting address at which heap page
+    int heap_tracker_region = -1;
+    for(int page = 0; page < p->used_heap_page_tracker; page ++){
+        // if faulting address is within this heap page address range
+        if (p->heap_tracker[page].addr < faulting_addr && faulting_addr < p->heap_tracker[page].addr + PGSIZE){
+            heap_tracker_region = page;
+            break;
+        }
+    }
+    if (heap_tracker_region != -1) {
         goto heap_handle;
     }
     // must be a page from the program binary that is not yet loaded.
@@ -136,7 +145,9 @@ heap_handle:
     }
 
     /* 2.3: Map a heap page into the process' address space. (Hint: check growproc) */
-
+    // Allocate a new physical page and map it to the faulted address
+    uvmalloc(p->pagetable, p->heap_tracker[heap_tracker_region].addr, p->heap_tracker[heap_tracker_region].addr + PGSIZE, PTE_W);
+    
     /* 2.4: Update the last load time for the loaded heap page in p->heap_tracker. */
 
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
