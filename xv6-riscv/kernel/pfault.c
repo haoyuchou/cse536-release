@@ -93,7 +93,7 @@ void page_fault_handler(void)
     int heap_tracker_region = -1;
     for(int page = 0; page < p->used_heap_page_tracker; page ++){
         // if faulting address is within this heap page address range
-        if (p->heap_tracker[page].addr < faulting_addr && faulting_addr < p->heap_tracker[page].addr + PGSIZE){
+        if (p->heap_tracker[page].addr <= faulting_addr && faulting_addr < p->heap_tracker[page].addr + PGSIZE){
             heap_tracker_region = page;
             break;
         }
