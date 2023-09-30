@@ -49,7 +49,7 @@ void evict_page_to_disk(struct proc* p) {
     print_evict_page(p->heap_tracker[victum_page_idx].addr, blockno);
     /* Read memory from the user to kernel memory first. */
     // allocate a kernel page !!!!!!!
-    char * kernel_page = kalloc();
+    uchar * kernel_page = kalloc();
     copyin(p->pagetable, kernel_page, p->heap_tracker[victum_page_idx].addr, PGSIZE);
     /* Write to the disk blocks. Below is a template as to how this works. There is
      * definitely a better way but this works for now. :p */
