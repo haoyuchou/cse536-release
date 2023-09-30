@@ -149,7 +149,7 @@ void page_fault_handler(void)
     /* Check if the fault address is a heap page. Use p->heap_tracker */
     // used heap_tracker, track faulting address at which heap page
     int heap_tracker_region = -1;
-    for(int page = 0; page < p->used_heap_page_tracker; page ++){
+    for(int page = 0; page < MAXHEAP; page ++){
         // if faulting address is within this heap page address range
         if (p->heap_tracker[page].addr <= faulting_addr && faulting_addr < p->heap_tracker[page].addr + PGSIZE){
             heap_tracker_region = page;
@@ -185,7 +185,7 @@ void page_fault_handler(void)
     if(faulting_addr < ph.vaddr || faulting_addr > (ph.vaddr + ph.memsz)){
         continue;}  
 
-    uvmalloc(p -> pagetable, faulting_addr, ph.vaddr + ph.memsz, flags2perm(ph.flags));
+    uvmalloc(p -> pagetable, ph.vaddr, ph.vaddr + ph.memsz, flags2perm(ph.flags));
     loadseg(p -> pagetable, ph.vaddr, ip, ph.off, ph.filesz);
     /* If it came here, it is a page from the program binary that we must load. */
     print_load_seg(faulting_addr, ph.off, ph.memsz);  
