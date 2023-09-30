@@ -40,7 +40,6 @@ void init_psa_regions(void)
 void evict_page_to_disk(struct proc* p) {
     /* Find free block, PSA area */
     int blockno = track_continu_psa_block(4);
-    printf("Evict Start block: %d/n", blockno);
     /* Find victim page using FIFO. */
     int victum_page_idx = find_victum_page(p);
     // startblock let us know this page was swapped
@@ -77,6 +76,7 @@ int track_continu_psa_block(int block){
     uint64 remain_block = block;
     for(int i = 0; i < PSASIZE; i++){
         // if this PSA block is already used
+        printf("block number, is used: %d%d ", i, psa_tracker[i]);
         if (psa_tracker[i]){
             remain_block = block;
         }else{
