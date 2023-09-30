@@ -296,7 +296,7 @@ growproc(int n)
       p->heap_tracker[pages].loaded = false;
       p->heap_tracker[pages].last_load_time = 0xFFFFFFFFFFFFFFFF;
       p->heap_tracker[pages].startblock = -1;
-      p->used_heap_page_tracker ++;
+      // p->used_heap_page_tracker ++;
       // update, used for tracking heap virtual address
       p->sz += PGSIZE;
       
