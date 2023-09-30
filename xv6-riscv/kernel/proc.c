@@ -289,7 +289,7 @@ growproc(int n)
     // prevent allocating pages for on-demand process
     // track of every heap page allocated to the process in growproc
     int pages;
-    for(int pages=0; pages * PGSIZE<n; pages ++){
+    for(pages=0; pages * PGSIZE<n; pages ++){
       // track the virtual address of each heap page.
       // virtual address tart from sz
       p->heap_tracker[pages].addr = p->sz;
