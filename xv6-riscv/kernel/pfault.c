@@ -60,7 +60,7 @@ void evict_page_to_disk(struct proc* p) {
         // Copy page contents to b.data using memmove.
         memmove(b->data, kernel_page + i, BSIZE);
         // track this psa block as used
-        psa_tracker[blockno] = true;
+        psa_tracker[start_block] = true;
         bwrite(b);
         brelse(b);
     }
