@@ -205,6 +205,11 @@ heap_handle:
         evict_page_to_disk(p);
     }
 
+    /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
+    if (p->heap_tracker[heap_tracker_region].startblock != -1) {
+        retrieve_page_from_disk(p, heap_tracker_region);
+    }
+
     /* 2.3: Map a heap page into the process' address space. (Hint: check growproc) */
     // Allocate a new physical page and map it to the faulted address
     uvmalloc(p->pagetable, p->heap_tracker[heap_tracker_region].addr, p->heap_tracker[heap_tracker_region].addr + PGSIZE, PTE_W);
@@ -214,10 +219,6 @@ heap_handle:
     p->heap_tracker[heap_tracker_region].startblock = -1;
     /* 2.4: Track total in-memory (or resident) heap pages*/
     p->resident_heap_pages++;
-    /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
-    if (p->heap_tracker[heap_tracker_region].startblock != -1) {
-        retrieve_page_from_disk(p, heap_tracker_region);
-    }
 
     /* Track that another heap page has been brought into memory. */
     //p->resident_heap_pages++;
