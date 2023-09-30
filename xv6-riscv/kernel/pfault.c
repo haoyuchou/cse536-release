@@ -40,7 +40,7 @@ void init_psa_regions(void)
 void evict_page_to_disk(struct proc* p) {
     /* Find free block, PSA area */
     int blockno = track_continu_psa_block(4);
-    print("Evict Start block: %d/n", blockno);
+    printf("Evict Start block: %d/n", blockno);
     /* Find victim page using FIFO. */
     int victum_page_idx = find_victum_page(p);
     // startblock let us know this page was swapped
