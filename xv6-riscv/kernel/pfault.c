@@ -76,7 +76,8 @@ int track_continu_psa_block(int block){
     uint64 remain_block = block;
     for(int i = 0; i < PSASIZE; i++){
         // if this PSA block is already used
-        printf("block number, is used: %d%d ", i, psa_tracker[i]);
+        printf("block number: %d\n", i);
+        printf("psa is used: %d\n", psa_tracker[i]);
         if (psa_tracker[i]){
             remain_block = block;
         }else{
