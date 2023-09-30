@@ -120,7 +120,7 @@ void retrieve_page_from_disk(struct proc* p, int heap_tracker_region) {
     p->heap_tracker[heap_tracker_region].last_load_time = read_current_timestamp();
     p->heap_tracker[heap_tracker_region].startblock = -1;
     /* Print statement. */
-    print_retrieve_page(va, startblock);
+    print_retrieve_page(p->heap_tracker[heap_tracker_region].addr, startblock);
 
     /* Create a kernel page to read memory temporarily into first. */
     
