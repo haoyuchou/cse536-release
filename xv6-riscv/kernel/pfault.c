@@ -49,7 +49,7 @@ void evict_page_to_disk(struct proc* p) {
     print_evict_page(p->heap_tracker[victum_page_idx].addr, blockno);
     /* Read memory from the user to kernel memory first. */
     // allocate a kernel page !!!!!!!
-    char * kernel_page = kalloc();
+    char* kernel_page = kalloc();
     copyin(p->pagetable, kernel_page, p->heap_tracker[victum_page_idx].addr, PGSIZE);
     /* Write to the disk blocks. Below is a template as to how this works. There is
      * definitely a better way but this works for now. :p */
@@ -134,7 +134,7 @@ void page_fault_handler(void)
     struct proc *p = myproc();
 
     /* Track whether the heap page should be brought back from disk or not. */
-    bool load_from_disk = false;
+    //bool load_from_disk = false;
 
     /* Find faulting address. */
      // stval register
@@ -157,6 +157,7 @@ void page_fault_handler(void)
         }
     }
     if (heap_tracker_region != -1) {
+        printf("go to heap yoooooo");
         goto heap_handle;
     }
     // must be a page from the program binary that is not yet loaded.
@@ -217,7 +218,7 @@ heap_handle:
     }
 
     /* Track that another heap page has been brought into memory. */
-    p->resident_heap_pages++;
+    //p->resident_heap_pages++;
 
 out:
     /* Flush stale page table entries. This is important to always do. */
