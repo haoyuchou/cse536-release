@@ -40,6 +40,7 @@ void init_psa_regions(void)
 void evict_page_to_disk(struct proc* p) {
     /* Find free block, PSA area */
     int blockno = track_continu_psa_block(4);
+    print("Evict Start block: %d/n", blockno);
     /* Find victim page using FIFO. */
     int victum_page_idx = find_victum_page(p);
     // startblock let us know this page was swapped
@@ -108,10 +109,10 @@ void retrieve_page_from_disk(struct proc* p, int heap_tracker_region) {
     uint64 va = p->heap_tracker[heap_tracker_region].addr;
     // according to the startblock, load from PSA
     struct buf *b;
-    for (int i = startblock, user_va = va; i<4; i++, user_va += BSIZE){
+    for (int i = startblock; i<4; i++, va += BSIZE){
         psa_tracker[i] = false;
         b = bread(1, PSASTART+i);
-        copyout(p->pagetable, user_va, (char*)b->data, BSIZE);
+        copyout(p->pagetable, va, (char*)b->data, BSIZE);
         brelse(b);
     }
 
@@ -157,7 +158,7 @@ void page_fault_handler(void)
         }
     }
     if (heap_tracker_region != -1) {
-        printf("go to heap yoooooo");
+        //printf("go to heap yoooooo");
         goto heap_handle;
     }
     // must be a page from the program binary that is not yet loaded.
