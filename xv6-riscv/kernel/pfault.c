@@ -151,6 +151,7 @@ void page_fault_handler(void)
 
     if (is_fork_shared_memory(p, faulting_addr)){
         copy_on_write(p, faulting_addr);
+        printf("copy on write for faulting address");
         goto out;
     }
 
