@@ -132,7 +132,6 @@ void copy_on_write(struct proc *p, uint64 virtual_addr) {
     pte_t *pte;
     uint64 pa;
     //uint flags;
-    char *mem;
     uint flags;
     // Allocate a new page 
     if((pte = walk(p->pagetable, virtual_addr, 0)) == 0){
@@ -142,11 +141,11 @@ void copy_on_write(struct proc *p, uint64 virtual_addr) {
       panic("uvmcopy: page not present");
     }
     pa = PTE2PA(*pte);
-    mem = kalloc();
+    char *mem = kalloc();
     // Copy contents from the shared page to the new page
     memmove(mem, (char*)pa, PGSIZE);
     // Map the new page in the faulting process's page table with write permissions
     flags = PTE_FLAGS(*pte) & ~PTE_W  & ~PTE_S;
-    *pte = PA2PTE(pa) | flags | PTE_W;
+    *pte = PA2PTE((uint64)mem) | flags | PTE_W;
     print_copy_on_write(p, virtual_addr);
 }
