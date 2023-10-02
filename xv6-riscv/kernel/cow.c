@@ -98,16 +98,53 @@ int uvmcopy_cow(pagetable_t old, pagetable_t new, uint64 sz) {
     // Copy user vitual memory from old(parent) to new(child) process
 
     // Map pages as Read-Only in both the processes
+    pte_t *pte;
+    uint64 pa, i;
+    uint flags;
+    // char *mem;
 
-    return 0;
+  for(i = 0; i < sz; i += PGSIZE){
+    // Retrieves the page table entry for the virtual address i in the old pagetable.
+    if((pte = walk(old, i, 0)) == 0){
+        panic("uvmcopy: pte should exist");
+    }
+    if((*pte & PTE_V) == 0){
+      panic("uvmcopy: page not present");
+    }
+    pa = PTE2PA(*pte);
+    // read only and supervisor mode
+    flags = (PTE_FLAGS(*pte) & ~PTE_W) | PTE_S;
+    // update page table entry flags
+    *pte = PA2PTE(pa) | flags;
+    if(mappages(new, i, PGSIZE, pa, flags) != 0) {
+        goto err;
+    }
+  }
+return 0;
+
+err:
+  uvmunmap(new, 0, i / PGSIZE, 1);
+  return -1;
 }
 
-void copy_on_write() {
+void copy_on_write(struct proc *p, uint64 virtual_addr) {
     /* CSE 536: (2.6.2) Handling Copy-on-write */
-
+    pte_t *pte;
+    uint64 pa;
+    //uint flags;
+    char *mem;
     // Allocate a new page 
-    
+    if((pte = walk(p->pagetable, virtual_addr, 0)) == 0){
+        panic("uvmcopy: pte should exist");
+    }
+    if((*pte & PTE_V) == 0){
+      panic("uvmcopy: page not present");
+    }
+    pa = PTE2PA(*pte);
+    mem = kalloc();
     // Copy contents from the shared page to the new page
-
+    memmove(mem, (char*)pa, PGSIZE);
     // Map the new page in the faulting process's page table with write permissions
+    *pte = PA2PTE(pa) | PTE_W;
+    print_copy_on_write(p, virtual_addr);
 }

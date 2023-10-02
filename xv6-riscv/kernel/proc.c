@@ -5,6 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
+// #include "cow.c"
 
 struct cpu cpus[NCPU];
 
@@ -340,8 +341,8 @@ fork(int cow_enabled)
 
   // implement and call the uvm_copy() function defined in cow.c
 
-  // Copy user memory from parent to child.
-  if(uvmcopy(p->pagetable, np->pagetable, p->sz) < 0){
+  // Copy user memory from parent to child. 2.6.1
+  if((cow_enabled && uvmcopy_cow(p->pagetable, np->pagetable, p->sz) < 0) || (!cow_enabled && uvmcopy(p->pagetable, np->pagetable, p->sz) < 0)){
     freeproc(np);
     release(&np->lock);
     return -1;
@@ -366,7 +367,21 @@ fork(int cow_enabled)
    * sh is always forked on any command, and it is reexecuted
    * from its forked counterpart. */
   np->ondemand = p->ondemand;
-
+  if (cow_enabled){
+  // set the metadata (cow_group and cow_enabled) 
+    if (p->cow_enabled){
+      //np->cow_enabled = p->cow_enabled;
+      np->cow_group = p->cow_group;  
+    }else{
+      // do I have to use lock?
+      acquire(&p->lock);
+      p->cow_group = p->pid;
+      np->cow_group = p->pid;
+      release(&p->lock);
+    }
+    p->cow_enabled = true;
+    np->cow_enabled = true;
+  }
   pid = np->pid;
 
   release(&np->lock);

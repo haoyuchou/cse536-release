@@ -16,6 +16,7 @@ int loadseg(pagetable_t pagetable, uint64 va, struct inode *ip, uint offset, uin
 int flags2perm(int flags);
 int track_continu_psa_block(int block);
 int find_victum_page(struct proc* p);
+bool is_fork_shared_memory(struct proc *p, uint64 virtual_addr);
 
 /* CSE 536: (2.4) read current time. */
 uint64 read_current_timestamp() {
@@ -148,6 +149,11 @@ void page_fault_handler(void)
    
     print_page_fault(p->name, faulting_addr);
 
+    if (is_fork_shared_memory(p, faulting_addr)){
+        copy_on_write(p, faulting_addr);
+        goto out;
+    }
+
     /* Check if the fault address is a heap page. Use p->heap_tracker */
     // used heap_tracker, track faulting address at which heap page
     int heap_tracker_region = -1;
@@ -227,4 +233,15 @@ out:
     /* Flush stale page table entries. This is important to always do. */
     sfence_vma();
     return;
+}
+
+bool is_fork_shared_memory(struct proc *p, uint64 virtual_addr){
+    pte_t *pte;
+
+    if((pte = walk(p->pagetable, virtual_addr, 0)) == 0)
+        return false;
+    if((*pte & PTE_V) == 0)
+        return false;
+
+    return true;
 }
