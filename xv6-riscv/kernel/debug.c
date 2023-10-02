@@ -43,5 +43,5 @@ void print_skip_heap_region(char* name, uint64 vaddr, int npages) {
 }
 
 void print_copy_on_write(struct proc *p, uint64 vaddr) {
-    printf("CoW: proc(%s)[%d] Addr (%x)\n", p->name, p->pid, vaddr);
+    printf("CoW: proc(%s) PID (%d) Addr (%x)\n", p->name, p->pid, vaddr);
 }

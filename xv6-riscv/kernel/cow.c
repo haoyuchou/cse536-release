@@ -112,7 +112,7 @@ int uvmcopy_cow(pagetable_t old, pagetable_t new, uint64 sz) {
       panic("uvmcopy: page not present");
     }
     pa = PTE2PA(*pte);
-    // read only and supervisor mode
+    // read only and supervisor mode, clear the write bits without affecting other
     flags = (PTE_FLAGS(*pte) & ~PTE_W) | PTE_S;
     // update page table entry flags
     *pte = PA2PTE(pa) | flags;
@@ -133,6 +133,7 @@ void copy_on_write(struct proc *p, uint64 virtual_addr) {
     uint64 pa;
     //uint flags;
     char *mem;
+    uint flags;
     // Allocate a new page 
     if((pte = walk(p->pagetable, virtual_addr, 0)) == 0){
         panic("uvmcopy: pte should exist");
@@ -145,6 +146,7 @@ void copy_on_write(struct proc *p, uint64 virtual_addr) {
     // Copy contents from the shared page to the new page
     memmove(mem, (char*)pa, PGSIZE);
     // Map the new page in the faulting process's page table with write permissions
-    *pte = PA2PTE(pa) | PTE_W;
+    flags = PTE_FLAGS(*pte) & ~PTE_W  & ~PTE_S;
+    *pte = PA2PTE(pa) | flags | PTE_W;
     print_copy_on_write(p, virtual_addr);
 }

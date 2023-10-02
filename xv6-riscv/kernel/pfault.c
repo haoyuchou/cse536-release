@@ -236,6 +236,9 @@ out:
 }
 
 bool is_fork_shared_memory(struct proc *p, uint64 virtual_addr){
+    if (p->cow_enabled == false){
+        return false;
+    }
     pte_t *pte;
 
     if((pte = walk(p->pagetable, virtual_addr, 0)) == 0)

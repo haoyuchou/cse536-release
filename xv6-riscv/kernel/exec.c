@@ -24,7 +24,12 @@ int flags2perm(int flags)
 bool is_on_demand(char *path){
   // all except init and sh
   if (strncmp(path, "/init", strlen(path)) != 0 && strncmp(path, "sh", strlen(path)) != 0){
-    return true;
+    if (strncmp(path, "test8-cow1", strlen(path)) != 0 && strncmp(path, "test9-cow2", strlen(path)) != 0){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
   else{
     return false;
@@ -99,7 +104,7 @@ exec(char *path, char **argv)
     // new size  
     sz = newSz;
   }
-  
+
   iunlockput(ip);
   end_op();
   ip = 0;

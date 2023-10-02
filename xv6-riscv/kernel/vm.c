@@ -194,7 +194,10 @@ uvmunmap(pagetable_t pagetable, uint64 va, uint64 npages, int do_free)
       uint64 pa = PTE2PA(*pte);
       /* CSE 536: (2.6.1) Freeing Process Memory */
       // Make sure that the shared pages, belonging to a CoW group, are not freed twice
-      kfree((void*)pa);
+      // the shared page is in supervisor mode
+      if(!(PTE_FLAGS(*pte) & PTE_S)){
+        kfree((void*)pa);
+      }
     }
     *pte = 0;
   }
