@@ -16,6 +16,7 @@ int loadseg(pagetable_t pagetable, uint64 va, struct inode *ip, uint offset, uin
 int flags2perm(int flags);
 int track_continu_psa_block(int block);
 int find_victum_page(struct proc* p);
+void load_heap(struct proc *p, int heap_tracker_region);
 bool is_fork_shared_memory(struct proc *p, uint64 virtual_addr);
 
 /* CSE 536: (2.4) read current time. */
@@ -67,7 +68,8 @@ void evict_page_to_disk(struct proc* p) {
     }
 
     /* Unmap swapped out page */
-    uvmunmap(p->pagetable, p->heap_tracker[victum_page_idx].addr, 1, 0);
+    // the last parameter is do_free
+    uvmunmap(p->pagetable, p->heap_tracker[victum_page_idx].addr, 1, 1);
     /* Update the resident heap tracker. */
     p->resident_heap_pages --;
 }
@@ -108,18 +110,20 @@ void retrieve_page_from_disk(struct proc* p, int heap_tracker_region) {
     /* Find where the page is located in disk */
     int startblock = p->heap_tracker[heap_tracker_region].startblock;
     // the user page address that we are gonna copy yo
-    uint64 va = p->heap_tracker[heap_tracker_region].addr;
+    // uint64 va = p->heap_tracker[heap_tracker_region].addr;
+    // retrieve back to kernel
+    uchar *kernel_addr = kalloc();
     // according to the startblock, load from PSA
     struct buf *b;
-    for (int i = startblock; i<4; i++, va += BSIZE){
+    for (int i = startblock, offset = 0; offset<PGSIZE; i++, offset += BSIZE){
         psa_tracker[i] = false;
         b = bread(1, PSASTART+i);
-        copyout(p->pagetable, va, (char*)b->data, BSIZE);
+        memmove(kernel_addr + offset, b->data, BSIZE);
+        //copyout(p->pagetable, va, (char*)kernel_addr, BSIZE);
         brelse(b);
     }
-
-    p->heap_tracker[heap_tracker_region].last_load_time = read_current_timestamp();
-    p->heap_tracker[heap_tracker_region].startblock = -1;
+    load_heap(p, heap_tracker_region);
+    copyout(p->pagetable, p->heap_tracker[heap_tracker_region].addr, (char*)kernel_addr, PGSIZE);
     /* Print statement. */
     print_retrieve_page(p->heap_tracker[heap_tracker_region].addr, startblock);
 
@@ -194,8 +198,8 @@ void page_fault_handler(void)
     // and its virtual address plus memory size (ph.vaddr + ph.memsz)
     if(faulting_addr < ph.vaddr || faulting_addr > (ph.vaddr + ph.memsz)){
         continue;}  
-
-    uvmalloc(p -> pagetable, ph.vaddr, ph.vaddr + ph.memsz, flags2perm(ph.flags));
+    // grow from oldsz to newsz, need not to be page aligned
+    uvmalloc(p -> pagetable, faulting_addr, ph.vaddr + ph.memsz, flags2perm(ph.flags));
     loadseg(p -> pagetable, ph.vaddr, ip, ph.off, ph.filesz);
     /* If it came here, it is a page from the program binary that we must load. */
     print_load_seg(faulting_addr, ph.off, ph.memsz);  
@@ -215,8 +219,19 @@ heap_handle:
     /* 2.4: Heap page was swapped to disk previously. We must load it from disk. */
     if (p->heap_tracker[heap_tracker_region].startblock != -1) {
         retrieve_page_from_disk(p, heap_tracker_region);
+    }else{
+        load_heap(p, heap_tracker_region);
     }
+    /* Track that another heap page has been brought into memory. */
+    //p->resident_heap_pages++;
 
+out:
+    /* Flush stale page table entries. This is important to always do. */
+    sfence_vma();
+    return;
+}
+
+void load_heap(struct proc *p, int heap_tracker_region){
     /* 2.3: Map a heap page into the process' address space. (Hint: check growproc) */
     // Allocate a new physical page and map it to the faulted address
     uvmalloc(p->pagetable, p->heap_tracker[heap_tracker_region].addr, p->heap_tracker[heap_tracker_region].addr + PGSIZE, PTE_W);
@@ -226,14 +241,6 @@ heap_handle:
     p->heap_tracker[heap_tracker_region].startblock = -1;
     /* 2.4: Track total in-memory (or resident) heap pages*/
     p->resident_heap_pages++;
-
-    /* Track that another heap page has been brought into memory. */
-    //p->resident_heap_pages++;
-
-out:
-    /* Flush stale page table entries. This is important to always do. */
-    sfence_vma();
-    return;
 }
 
 bool is_fork_shared_memory(struct proc *p, uint64 virtual_addr){
