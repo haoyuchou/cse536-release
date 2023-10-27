@@ -108,6 +108,7 @@ void ulthread_schedule(void) {
                 current_thread = Priority();
                 break;
             default:
+                current_thread = NULL;
                 return;
         }
         // make all yield thread runnable again
@@ -191,9 +192,9 @@ void ulthread_yield(void) {
     struct thread *yield_thread = current_thread;
     current_thread = ulthread.threads[0];
     yield_thread->state = YIELD;
-    ulthread_context_switch(&yield_thread->context_swit, &ulthread.threads[0]->context_swit);
     /* Please add thread-id instead of '0' here. */
     printf("[*] ultyield(tid: %d)\n", yield_thread->id);
+    ulthread_context_switch(&yield_thread->context_swit, &ulthread.threads[0]->context_swit);
 }
 
 /* Destroy thread */
@@ -201,6 +202,6 @@ void ulthread_destroy(void) {
     struct thread *destroy_thread = current_thread;
     current_thread = ulthread.threads[0];
     destroy_thread->state = FREE;
-    ulthread_context_switch(&destroy_thread->context_swit, &ulthread.threads[0]->context_swit);
     printf("[*] ultdestroy(tid: %d)\n", destroy_thread->id);
+    ulthread_context_switch(&destroy_thread->context_swit, &ulthread.threads[0]->context_swit);
 }
