@@ -39,6 +39,7 @@ void ulthread_init(int schedalgo) {
     ulthread.next_id = 1;
     ulthread.size = 1;
     ulthread.schedule_algo = schedalgo;
+    current_thread = new_thread;
 }
 
 /* Thread creation */
