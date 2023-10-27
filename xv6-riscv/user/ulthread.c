@@ -53,7 +53,7 @@ bool ulthread_create(uint64 start, uint64 stack, uint64 args[], int priority) {
     new_thread->state = RUNNABLE;
     
     // create and maintain context
-    memset(&new_thread->context_swit, 0, sizeod(new_thread->context_swit));
+    memset(&new_thread->context_swit, 0, sizeof(new_thread->context_swit));
     new_thread->context_swit.ra = start;
     new_thread->context_swit.sp = stack;
 
