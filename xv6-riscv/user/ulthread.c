@@ -67,11 +67,10 @@ bool ulthread_create(uint64 start, uint64 stack, uint64 args[], int priority) {
         return false;
     }
 
-    /* Please add thread-id instead of '0' here. */
-    printf("[*] ultcreate(tid: %d, ra: %p, sp: %p)\n", ulthread.next_id, start, stack);
-
     ulthread.size ++;
     ulthread.next_id ++;
+    /* Please add thread-id instead of '0' here. */
+    printf("[*] ultcreate(tid: %d, ra: %p, sp: %p)\n",new_thread->id, start, stack);
     return true;
 }
 
@@ -103,14 +102,14 @@ void ulthread_schedule(void) {
     for(;;){
         switch (ulthread.schedule_algo){
             case FCFS:
-                current_thread = first_come_first_serve();
+                next_thread = first_come_first_serve();
                 break;
             case PRIORITY:
-                current_thread = Priority();
+                next_thread = Priority();
                 break;
             default:
-                current_thread = NULL;
-                return;
+                next_thread = NULL;
+                break;
         }
         // make all yield thread runnable again
         uint64 recover_yield_count = retrieve_yield_ulthread();
@@ -138,14 +137,14 @@ void ulthread_schedule(void) {
 }
 
 struct thread* first_come_first_serve(void){
-    struct thread *return_thread = ulthread.threads[0];
+    struct thread *return_thread;
 
     for (int i = 1; i < ulthread.size; i++){
         if (ulthread.threads[i]->state != RUNNABLE){
             continue;
         }
 
-        if (return_thread->id == 0){
+        if (!return_thread){
             return_thread = ulthread.threads[i];
         }
         
@@ -158,13 +157,13 @@ struct thread* first_come_first_serve(void){
 }
 
 struct thread* Priority(void){
-    struct thread *return_thread = ulthread.threads[0];
+    struct thread *return_thread;
     for (int i = 1; i < ulthread.size; i++){
         if (ulthread.threads[i]->state != RUNNABLE){
             continue;
         }
 
-        if (return_thread->id == 0){
+        if (!return_thread){
             return_thread = ulthread.threads[i];
         }
         
@@ -195,7 +194,7 @@ void ulthread_yield(void) {
     yield_thread->state = YIELD;
     /* Please add thread-id instead of '0' here. */
     printf("[*] ultyield(tid: %d)\n", yield_thread->id);
-    ulthread_context_switch(&yield_thread->context_swit, &ulthread.threads[0]->context_swit);
+    ulthread_context_switch(&yield_thread->context_swit, &current_thread->context_swit);
 }
 
 /* Destroy thread */
@@ -204,5 +203,5 @@ void ulthread_destroy(void) {
     current_thread = ulthread.threads[0];
     destroy_thread->state = FREE;
     printf("[*] ultdestroy(tid: %d)\n", destroy_thread->id);
-    ulthread_context_switch(&destroy_thread->context_swit, &ulthread.threads[0]->context_swit);
+    ulthread_context_switch(&destroy_thread->context_swit, &current_thread->context_swit);
 }
