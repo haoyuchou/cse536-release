@@ -43,8 +43,6 @@ void ulthread_init(int schedalgo) {
 
 /* Thread creation */
 bool ulthread_create(uint64 start, uint64 stack, uint64 args[], int priority) {
-    /* Please add thread-id instead of '0' here. */
-    printf("[*] ultcreate(tid: %d, ra: %p, sp: %p)\n", ulthread.next_id, start, stack);
 
     struct thread *new_thread = malloc(sizeof(struct thread));
     
@@ -68,9 +66,12 @@ bool ulthread_create(uint64 start, uint64 stack, uint64 args[], int priority) {
         return false;
     }
 
+    /* Please add thread-id instead of '0' here. */
+    printf("[*] ultcreate(tid: %d, ra: %p, sp: %p)\n", ulthread.next_id, start, stack);
+
     ulthread.size ++;
     ulthread.next_id ++;
-    return false;
+    return true;
 }
 
 void args_to_context(struct context_switch *context_swit, uint64 args[], uint64 args_length){
