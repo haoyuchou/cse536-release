@@ -52,7 +52,7 @@ struct thread {
 
   enum ulthread_state state;
   struct context_switch context_swit;
-}
+};
 
 struct ulthrea {
   struct thread *threads[MAXULTHREADS];
@@ -60,6 +60,6 @@ struct ulthrea {
   uint64 next_id;
 
   enum ulthread_scheduling_algorithm schedule_algo;
-}
+};
 
 #endif
