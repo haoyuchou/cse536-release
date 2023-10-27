@@ -54,12 +54,23 @@ struct thread {
   struct context_switch context_swit;
 };
 
+struct rrq_element{
+  struct thread *threa;
+  struct rrq_element *next;
+};
+
+struct rr_queue{
+  struct rrq_element *front;
+  struct rrq_element *back;
+};
+
 struct ulthrea {
   struct thread *threads[MAXULTHREADS];
   uint64 size;
   uint64 next_id;
 
   enum ulthread_scheduling_algorithm schedule_algo;
+  struct rr_queue* round_robin_queue;
 };
 
 #endif

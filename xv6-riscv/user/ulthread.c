@@ -15,10 +15,12 @@ struct ulthrea ulthread;
 struct thread *current_thread;
 void args_to_context(struct context_switch *context_swit, uint64 args[], uint64 args_length);
 bool add_thread_to_ulthread(struct thread* threa);
+struct thread* get_thread_from_rr(void);
 uint64 retrieve_yield_ulthread(void);
 
 struct thread* first_come_first_serve(void);
 struct thread* Priority(void);
+struct thread* round_robin(void);
 
 /* Get thread ID*/
 uint64 get_current_tid() {
@@ -31,7 +33,13 @@ void ulthread_init(int schedalgo) {
     new_thread->id = 0;
     new_thread->priority = 0;
     memset(&new_thread->context_swit, 0, sizeof(new_thread->context_swit));
-    
+
+    // initialize round robin queue
+    struct rr_queue *roundRobinQueue = NULL;
+    if (schedalgo == ROUNDROBIN){
+        roundRobinQueue = malloc(sizeof(struct rr_queue));
+    }
+
     // assign the first kernel-provided thread 
     // to be the user-level scheduler thread.
     // keep track of the self thread[ulthread]
@@ -39,6 +47,7 @@ void ulthread_init(int schedalgo) {
     ulthread.next_id = 1;
     ulthread.size = 1;
     ulthread.schedule_algo = schedalgo;
+    ulthread.round_robin_queue = roundRobinQueue;
     current_thread = new_thread;
 }
 
@@ -65,6 +74,22 @@ bool ulthread_create(uint64 start, uint64 stack, uint64 args[], int priority) {
     
     if(!add_thread_to_ulthread(new_thread)){
         return false;
+    }
+
+    // push this new thread to round robin if the algo fit
+
+    if (ulthread.schedule_algo == ROUNDROBIN){
+        struct rrq_element *new_rr_element = malloc(sizeof(struct rrq_element));
+        new_rr_element->threa = new_thread;
+        new_rr_element->next = NULL;
+
+        if(ulthread.round_robin_queue->front){
+        ulthread.round_robin_queue->back->next = new_rr_element;
+        ulthread.round_robin_queue->back = new_rr_element;
+        }else{
+            ulthread.round_robin_queue->front = new_rr_element;
+            ulthread.round_robin_queue->back = new_rr_element;
+        }
     }
 
     ulthread.size ++;
@@ -106,6 +131,9 @@ void ulthread_schedule(void) {
                 break;
             case PRIORITY:
                 next_thread = Priority();
+                break;
+            case ROUNDROBIN:
+                next_thread = round_robin(); 
                 break;
             default:
                 next_thread = NULL;
@@ -172,6 +200,46 @@ struct thread* Priority(void){
             return_thread = ulthread.threads[i];
         }
     }
+    return return_thread;
+}
+
+struct thread* round_robin(void){
+    struct thread* return_thread;
+    int loop_count = 0;
+    while((loop_count++ < ulthread.size) && (return_thread = get_thread_from_rr()) && return_thread){
+        if(return_thread->state == FREE){
+            continue;
+        }
+        
+        // if the state is yield or runnable, push it back to rrq
+        
+        struct rrq_element *new_rr_element = malloc(sizeof(struct rrq_element));
+        new_rr_element->threa = return_thread;
+        new_rr_element->next = NULL;
+
+        if(ulthread.round_robin_queue->front){
+            ulthread.round_robin_queue->back->next = new_rr_element;
+            ulthread.round_robin_queue->back = new_rr_element;
+        }else{
+            ulthread.round_robin_queue->front = new_rr_element;
+            ulthread.round_robin_queue->back = new_rr_element;
+        }
+
+        if(return_thread->state == RUNNABLE){
+            return return_thread;
+        }
+        
+    }
+
+    return NULL;
+
+}
+struct thread* get_thread_from_rr(void){
+    if (!ulthread.round_robin_queue->front){
+        return NULL;
+    }
+    struct thread *return_thread = ulthread.round_robin_queue->front->threa;
+    ulthread.round_robin_queue->front = ulthread.round_robin_queue->front->next;
     return return_thread;
 }
 
