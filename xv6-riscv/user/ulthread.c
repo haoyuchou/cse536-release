@@ -21,7 +21,7 @@ struct thread* first_come_first_serve(void);
 struct thread* Priority(void);
 
 /* Get thread ID*/
-void get_current_tid() {
+uint64 get_current_tid() {
     return current_thread->id;
 }
 
