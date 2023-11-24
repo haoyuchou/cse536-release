@@ -13,6 +13,7 @@ extern char trampoline[], uservec[], userret[];
 
 // in kernelvec.S, calls kerneltrap().
 void kernelvec();
+uint8 is_vm(void);
 
 extern int devintr();
 
@@ -50,7 +51,13 @@ usertrap(void)
   // save user program counter.
   p->trapframe->epc = r_sepc();
 
-  if(r_scause() == 8){
+  uint64 scause_num = r_scause();
+
+  if((scause_num == 8 || scause_num == 2) && is_vm()){
+    // redirect to trap_and_emulate function
+    trap_and_emulate();
+  }
+    else if(scause_num == 8){ 
     // system call
     if(killed(p))
       exit(-1);
@@ -80,6 +87,11 @@ usertrap(void)
     yield();
 
   usertrapret();
+}
+
+uint8 is_vm(void) {
+  struct proc *p = myproc();
+  return memcmp(p->name, "vm-", 3) == 0;
 }
 
 //
@@ -217,4 +229,5 @@ devintr()
     return 0;
   }
 }
+
 
