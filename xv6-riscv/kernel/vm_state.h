@@ -18,17 +18,17 @@ struct vm_virtual_state {
     struct vm_reg privilege_registers[PRIVILEGE_REGISTERS];
 };
 
-void setup_privilege_regs(struct vm_virtual_state *state);
+void setup_privilege_registers(struct vm_virtual_state *state);
 
 struct vm_virtual_state get_vm_state(void) {
     struct vm_virtual_state vm_state;
 
-    setup_privilege_reg(&vm_state);
+    setup_privilege_registers(&vm_state);
 
     return vm_state;
 }
 
-void setup_privilege_regs(struct vm_virtual_state *state) {
+void setup_privilege_registers(struct vm_virtual_state *state) {
     // Machine trap handling registers
     state->privilege_registers[0] = (struct vm_reg){.code = 0x340, .authenticate = 0x22, .val = 0};
     state->privilege_registers[1] = (struct vm_reg){.code = 0x341, .authenticate = 0x22, .val = 0};
