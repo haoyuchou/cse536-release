@@ -45,7 +45,7 @@ void setup_registers(struct vm_virtual_state *state) {
     state->privilege_registers[5] = (struct vm_reg){.code = 0x34a, .authenticate = 0x22, .val = 0};
     state->privilege_registers[6] = (struct vm_reg){.code = 0x34b, .authenticate = 0x22, .val = 0};
     // Machine Trap Setup
-    state->privilege_registers[7] = (struct vm_reg){.code = 0x300, .authenticate = 0x22, .val = 0};
+    state->privilege_registers[7] = (struct vm_reg){.code = 0x300, .authenticate = 0x22, .val = 0x1800};
     state->privilege_registers[8] = (struct vm_reg){.code = 0x301, .authenticate = 0x22, .val = 0};
     state->privilege_registers[9] = (struct vm_reg){.code = 0x302, .authenticate = 0x22, .val = 0};
     state->privilege_registers[10] = (struct vm_reg){.code = 0x303, .authenticate = 0x22, .val = 0};
