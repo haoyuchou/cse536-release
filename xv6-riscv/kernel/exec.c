@@ -31,10 +31,6 @@ exec(char *path, char **argv)
   pagetable_t pagetable = 0, oldpagetable;
   struct proc *p = myproc();
 
-if(strncmp(path, "vm-test", 7) == 0){
-    trap_and_emulate_init();
-}
-
   begin_op();
 
   if((ip = namei(path)) == 0){
@@ -140,6 +136,8 @@ if(strncmp(path, "vm-test", 7) == 0){
       goto bad;
     }
     printf("Created a VM process and allocated memory region (%p - %p).\n", memaddr, memaddr + 1024*PGSIZE);
+  
+    trap_and_emulate_init();
   }
 
   return argc; // this ends up in a0, the first argument to main(argc, argv)

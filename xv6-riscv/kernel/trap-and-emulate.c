@@ -89,7 +89,6 @@ uint32 emulate_sret(struct instruction* trapInstruction);
 uint32 emulate_ecall(struct instruction* trapInstruction);
 uint32 instruction_valid_read(uint32 authenticate);
 uint32 instruction_valid_write(uint32 authenticate);
-void copy_for_US_exe(void);
 
 uint32 trap_instruction_emulation(struct instruction *trapInstruction){
     if(trapInstruction->funct3 == 0x1){
@@ -134,6 +133,8 @@ uint32 emulate_csrw(struct instruction* trapInstruction){
         return 0;
     }
 }
+// q5
+void copy_for_US_exe(void);
 
 uint32 emulate_mret(struct instruction* trapInstruction){
     struct proc *p = myproc();
@@ -152,6 +153,57 @@ uint32 emulate_mret(struct instruction* trapInstruction){
         return 0;
     }
     return 1;
+}
+
+void pmp_region_preparation(void); 
+
+void copy_for_US_exe(void){
+    // backup page table
+    struct proc *p = myproc();
+    p->vm_pagetable = uvmcreate();
+    //uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
+    p->pagetable = uvmcreate();
+    
+    pmp_region_preparation();
+}
+
+// q5
+uint64 PTE_permission(uint64 pmp_authenticate);
+void page_copy(uint64 sz, uint64 permission);
+
+void pmp_region_preparation(void) {
+    //struct proc *p = myproc();
+    struct vm_reg *pmpconfig0 = get_privilege_reg(&vm_state, 0x3a0);
+    struct vm_reg *pmpaddr0 = get_privilege_reg(&vm_state, 0x3b0);
+
+    uint64 pmp_authentication = pmpconfig0->val & 3;
+    uint64 permission = PTE_permission(pmp_authentication);
+    uint64 upper = (pmpaddr0->val << 2);
+    // for a created VM, the VMM automatically provides a 4MB memory region from 0x80000000 - 0x80400000.
+    if(upper < 0x80000000) {
+        return;
+    }
+
+    page_copy(upper, permission);
+}
+
+void page_copy(uint64 upper, uint64 permission){
+    struct proc *p = myproc();
+
+    for (uint64 start = 0x80000000; start<upper; start += PGSIZE){
+        uint64 phys_addr = walkaddr(p->vm_pagetable, start);
+        mappages(p->pagetable, start, PGSIZE, phys_addr, permission);
+    }
+}
+
+uint64 PTE_permission(uint64 pmp_authenticate){
+    if (pmp_authenticate == 1){
+        return PTE_R;
+    }else if(pmp_authenticate == 2){
+        return PTE_W;
+    }else{
+        return PTE_U | PTE_R | PTE_W | PTE_X;
+    }
 }
 
 uint32 emulate_sret(struct instruction* trapInstruction){
@@ -191,12 +243,6 @@ uint32 instruction_valid_read(uint32 authenticate){
 
 uint32 instruction_valid_write(uint32 authenticate){
     return current_exe_mode >= (authenticate & 15);
-}
-
-void copy_for_US_exe(void){
-    struct proc *p = myproc();
-    p->vm_pagetable = uvmcreate();
-    uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
 }
 
 void trap_and_emulate_init(void) {
