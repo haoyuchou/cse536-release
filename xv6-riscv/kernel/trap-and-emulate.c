@@ -5,8 +5,8 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
-#include "vm_state.h";
-#include "read_write_registers.h";
+#include "vm_state.h"
+#include "read_write_registers.h"
 
 enum exe_mode current_exe_mode;
 struct vm_virtual_state vm_state;
