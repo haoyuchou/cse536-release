@@ -171,13 +171,13 @@ uint32 emulate_sret(struct instruction* trapInstruction){
 uint32 emulate_ecall(struct instruction* trapInstruction){
     struct proc *p = myproc();
     // stvel register
-    struct vm_reg *stvel = get_privilege_reg(&vm_state, 0x105);
+    struct vm_reg *stvec = get_privilege_reg(&vm_state, 0x105);
     // sepc register
     struct vm_reg *sepc = get_privilege_reg(&vm_state, 0x141);
     current_exe_mode = SUPERVISOR;
     // save epc so it can go back to it
     sepc->val = p->trapframe->epc;
-    p->trapframe->epc = stvel->val - 4;
+    p->trapframe->epc = stvec->val - 4;
     
     return 1;
 }

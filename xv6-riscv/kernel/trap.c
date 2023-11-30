@@ -13,7 +13,7 @@ extern char trampoline[], uservec[], userret[];
 
 // in kernelvec.S, calls kerneltrap().
 void kernelvec();
-uint8 is_vm(void);
+uint32 is_vm(void);
 
 extern int devintr();
 
@@ -100,7 +100,7 @@ usertrap(void)
   usertrapret();
 }
 
-uint8 is_vm(void) {
+uint32 is_vm(void) {
   struct proc *p = myproc();
   return memcmp(p->name, "vm-", 3) == 0;
 }
