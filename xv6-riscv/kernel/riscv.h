@@ -294,6 +294,12 @@ r_sp()
   asm volatile("mv %0, sp" : "=r" (x) );
   return x;
 }
+// write to sp register
+static inline void
+w_sp(uint64 x)
+{
+  asm volatile("mv sp, %0" : : "r" (x));
+}
 
 // read and write tp, the thread pointer, which xv6 uses to hold
 // this core's hartid (core number), the index into cpus[].
@@ -317,6 +323,392 @@ r_ra()
   uint64 x;
   asm volatile("mv %0, ra" : "=r" (x) );
   return x;
+}
+
+// write to ra register
+static inline void
+w_ra(uint64 x)
+{
+  asm volatile("mv ra, %0" : : "r" (x));
+}
+
+// register t0 - t6, a0 - a7, s0 s11
+static inline uint64
+r_t0()
+{
+  uint64 x;
+  asm volatile("mv %0, t0" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t0(uint64 x)
+{
+  asm volatile("mv t0, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t1()
+{
+  uint64 x;
+  asm volatile("mv %0, t1" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t1(uint64 x)
+{
+  asm volatile("mv t1, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t2()
+{
+  uint64 x;
+  asm volatile("mv %0, t2" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t2(uint64 x)
+{
+  asm volatile("mv t2, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t3()
+{
+  uint64 x;
+  asm volatile("mv %0, t3" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t3(uint64 x)
+{
+  asm volatile("mv t3, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t4()
+{
+  uint64 x;
+  asm volatile("mv %0, t4" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t4(uint64 x)
+{
+  asm volatile("mv t4, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t5()
+{
+  uint64 x;
+  asm volatile("mv %0, t5" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t5(uint64 x)
+{
+  asm volatile("mv t5, %0" : : "r" (x));
+}
+
+static inline uint64
+r_t6()
+{
+  uint64 x;
+  asm volatile("mv %0, t6" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_t6(uint64 x)
+{
+  asm volatile("mv t6, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a0()
+{
+  uint64 x;
+  asm volatile("mv %0, a0" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a0(uint64 x)
+{
+  asm volatile("mv a0, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a1()
+{
+  uint64 x;
+  asm volatile("mv %0, a1" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a1(uint64 x)
+{
+  asm volatile("mv a1, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a2()
+{
+  uint64 x;
+  asm volatile("mv %0, a2" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a2(uint64 x)
+{
+  asm volatile("mv a2, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a3()
+{
+  uint64 x;
+  asm volatile("mv %0, a3" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a3(uint64 x)
+{
+  asm volatile("mv a3, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a4()
+{
+  uint64 x;
+  asm volatile("mv %0, a4" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a4(uint64 x)
+{
+  asm volatile("mv a4, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a5()
+{
+  uint64 x;
+  asm volatile("mv %0, a5" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a5(uint64 x)
+{
+  asm volatile("mv a5, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a6()
+{
+  uint64 x;
+  asm volatile("mv %0, a6" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a6(uint64 x)
+{
+  asm volatile("mv a6, %0" : : "r" (x));
+}
+
+static inline uint64
+r_a7()
+{
+  uint64 x;
+  asm volatile("mv %0, a7" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_a7(uint64 x)
+{
+  asm volatile("mv a7, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s0()
+{
+  uint64 x;
+  asm volatile("mv %0, s0" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s0(uint64 x)
+{
+  asm volatile("mv s0, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s1()
+{
+  uint64 x;
+  asm volatile("mv %0, s1" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s1(uint64 x)
+{
+  asm volatile("mv s1, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s2()
+{
+  uint64 x;
+  asm volatile("mv %0, s2" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s2(uint64 x)
+{
+  asm volatile("mv s2, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s3()
+{
+  uint64 x;
+  asm volatile("mv %0, s3" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s3(uint64 x)
+{
+  asm volatile("mv s3, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s4()
+{
+  uint64 x;
+  asm volatile("mv %0, s4" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s4(uint64 x)
+{
+  asm volatile("mv s4, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s5()
+{
+  uint64 x;
+  asm volatile("mv %0, s5" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s5(uint64 x)
+{
+  asm volatile("mv s5, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s6()
+{
+  uint64 x;
+  asm volatile("mv %0, s6" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s6(uint64 x)
+{
+  asm volatile("mv s6, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s7()
+{
+  uint64 x;
+  asm volatile("mv %0, s7" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s7(uint64 x)
+{
+  asm volatile("mv s7, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s8()
+{
+  uint64 x;
+  asm volatile("mv %0, s8" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s8(uint64 x)
+{
+  asm volatile("mv s8, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s9()
+{
+  uint64 x;
+  asm volatile("mv %0, s9" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s9(uint64 x)
+{
+  asm volatile("mv s9, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s10()
+{
+  uint64 x;
+  asm volatile("mv %0, s10" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s10(uint64 x)
+{
+  asm volatile("mv s10, %0" : : "r" (x));
+}
+
+static inline uint64
+r_s11()
+{
+  uint64 x;
+  asm volatile("mv %0, s11" : "=r" (x) );
+  return x;
+}
+
+static inline void
+w_s11(uint64 x)
+{
+  asm volatile("mv s11, %0" : : "r" (x));
 }
 
 // flush the TLB.

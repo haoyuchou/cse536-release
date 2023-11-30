@@ -53,9 +53,20 @@ usertrap(void)
 
   uint64 scause_num = r_scause();
 
-  if((scause_num == 8 || scause_num == 2) && is_vm()){
+  if(is_vm() && (scause_num == 8 || scause_num == 2)){
+    uint32 emulated_res;
+    if (scause_num == 2){
+      emulated_res = trap_and_emulate();
+    }else if(scause_num == 8){
     // redirect to trap_and_emulate function
-    trap_and_emulate();
+      emulated_res = trap_and_emulate_ecall();
+    }
+    if(emulated_res == 1){
+      p->trapframe->epc += 4;
+      intr_on();
+    }else{
+      setkilled(p);
+    }
   }
     else if(scause_num == 8){ 
     // system call

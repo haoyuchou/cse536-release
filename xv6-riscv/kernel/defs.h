@@ -191,8 +191,8 @@ void            virtio_disk_intr(void);
 void            dump_hex(const void* data, size_t size);
 
 // trap-and-emulate.c
-void            trap_and_emulate(void);
-void            trap_and_emulate_ecall(void);
+uint32            trap_and_emulate(void);
+uint32            trap_and_emulate_ecall(void);
 void            trap_and_emulate_init(void);
 
 

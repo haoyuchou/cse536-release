@@ -31,6 +31,10 @@ exec(char *path, char **argv)
   pagetable_t pagetable = 0, oldpagetable;
   struct proc *p = myproc();
 
+if(strncmp(path, "vm-test", 7) == 0){
+    trap_and_emulate_init();
+}
+
   begin_op();
 
   if((ip = namei(path)) == 0){
