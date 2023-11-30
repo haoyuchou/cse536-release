@@ -89,6 +89,7 @@ uint32 emulate_sret(struct instruction* trapInstruction);
 uint32 emulate_ecall(struct instruction* trapInstruction);
 uint32 instruction_valid_read(uint32 authenticate);
 uint32 instruction_valid_write(uint32 authenticate);
+void copy_for_US_exe(void);
 
 uint32 trap_instruction_emulation(struct instruction *trapInstruction){
     if(trapInstruction->funct3 == 0x1){
@@ -145,6 +146,8 @@ uint32 emulate_mret(struct instruction* trapInstruction){
         // jump to mepc register
         struct vm_reg *mepc = get_privilege_reg(&vm_state, 0x341);
         p->trapframe->epc = mepc->val - 4;
+
+        copy_for_US_exe();
     }else{
         return 0;
     }
@@ -188,6 +191,12 @@ uint32 instruction_valid_read(uint32 authenticate){
 
 uint32 instruction_valid_write(uint32 authenticate){
     return current_exe_mode >= (authenticate & 15);
+}
+
+void copy_for_US_exe(void){
+    struct proc *p = myproc();
+    p->vm_pagetable = uvmcreate();
+    uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
 }
 
 void trap_and_emulate_init(void) {

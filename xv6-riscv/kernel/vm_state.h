@@ -1,6 +1,6 @@
 #include "types.h"
 
-#define PRIVILEGE_REGISTERS 38
+#define PRIVILEGE_REGISTERS 40
 
 enum exe_mode {USER, SUPERVISOR, MACHINE};
 
@@ -28,6 +28,7 @@ struct vm_virtual_state get_vm_state(void) {
     return vm_state;
 }
 
+// all list on  RISC-V Privileged Register Mappings
 void setup_privilege_registers(struct vm_virtual_state *state) {
     // Machine trap handling registers
     state->privilege_registers[0] = (struct vm_reg){.code = 0x340, .authenticate = 0x22, .val = 0};
@@ -52,29 +53,32 @@ void setup_privilege_registers(struct vm_virtual_state *state) {
     state->privilege_registers[17] = (struct vm_reg){.code = 0xf13, .authenticate = 0x22, .val = 0};
     state->privilege_registers[18] = (struct vm_reg){.code = 0xf14, .authenticate = 0x22, .val = 0};
     state->privilege_registers[19] = (struct vm_reg){.code = 0xf15, .authenticate = 0x22, .val = 0};
+    // Machine memory protection registers
+    state->privilege_registers[20] = (struct vm_reg){.code = 0x3a0, .authenticate = 0x22, .val = 0};
+    state->privilege_registers[21] = (struct vm_reg){.code = 0x3b0, .authenticate = 0x22, .val = 0};
     // Supervisor page table register
-    state->privilege_registers[20] = (struct vm_reg){.code = 0x180, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[22] = (struct vm_reg){.code = 0x180, .authenticate = 0x11, .val = 0};
     // Supervisor trap setup registers
-    state->privilege_registers[21] = (struct vm_reg){.code = 0x100, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[22] = (struct vm_reg){.code = 0x104, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[23] = (struct vm_reg){.code = 0x105, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[24] = (struct vm_reg){.code = 0x106, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[23] = (struct vm_reg){.code = 0x100, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[24] = (struct vm_reg){.code = 0x104, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[25] = (struct vm_reg){.code = 0x105, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[26] = (struct vm_reg){.code = 0x106, .authenticate = 0x11, .val = 0};
     // Supervisor trap handling registers
-    state->privilege_registers[25] = (struct vm_reg){.code = 0x140, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[26] = (struct vm_reg){.code = 0x141, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[27] = (struct vm_reg){.code = 0x142, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[28] = (struct vm_reg){.code = 0x143, .authenticate = 0x11, .val = 0};
-    state->privilege_registers[29] = (struct vm_reg){.code = 0x144, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[27] = (struct vm_reg){.code = 0x140, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[28] = (struct vm_reg){.code = 0x141, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[29] = (struct vm_reg){.code = 0x142, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[30] = (struct vm_reg){.code = 0x143, .authenticate = 0x11, .val = 0};
+    state->privilege_registers[31] = (struct vm_reg){.code = 0x144, .authenticate = 0x11, .val = 0};
     // User trap handling registers
-    state->privilege_registers[30] = (struct vm_reg){.code = 0x040, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[31] = (struct vm_reg){.code = 0x041, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[32] = (struct vm_reg){.code = 0x042, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[33] = (struct vm_reg){.code = 0x043, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[34] = (struct vm_reg){.code = 0x044, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[32] = (struct vm_reg){.code = 0x040, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[33] = (struct vm_reg){.code = 0x041, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[34] = (struct vm_reg){.code = 0x042, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[35] = (struct vm_reg){.code = 0x043, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[36] = (struct vm_reg){.code = 0x044, .authenticate = 0x00, .val = 0};
     // User trap setup registers
-    state->privilege_registers[35] = (struct vm_reg){.code = 0x000, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[36] = (struct vm_reg){.code = 0x004, .authenticate = 0x00, .val = 0};
-    state->privilege_registers[37] = (struct vm_reg){.code = 0x005, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[37] = (struct vm_reg){.code = 0x000, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[38] = (struct vm_reg){.code = 0x004, .authenticate = 0x00, .val = 0};
+    state->privilege_registers[39] = (struct vm_reg){.code = 0x005, .authenticate = 0x00, .val = 0};
 }
 
 struct vm_reg* get_privilege_reg(struct vm_virtual_state* state, int code) {
