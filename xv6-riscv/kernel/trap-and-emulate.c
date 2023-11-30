@@ -59,8 +59,8 @@ struct instruction retrieve_trap_instruction(void){
 
 uint32 get_coded_instruction(void){
     struct proc *p = myproc();
-    char *buffer = kalloc();
     uint64 va = r_sepc();
+    char *buffer = kalloc();
     copyin(p->pagetable, buffer, va, PGSIZE);
     return *((uint32*) buffer);
 }
@@ -194,4 +194,5 @@ void trap_and_emulate_init(void) {
     /* Create and initialize all state for the VM */
     vm_state = get_vm_state();
     current_exe_mode = MACHINE;
+    printf("start emulating\n");
 }

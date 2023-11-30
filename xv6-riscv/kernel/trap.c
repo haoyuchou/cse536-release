@@ -61,6 +61,7 @@ usertrap(void)
     // redirect to trap_and_emulate function
       emulated_res = trap_and_emulate_ecall();
     }
+
     if(emulated_res == 1){
       p->trapframe->epc += 4;
       intr_on();
