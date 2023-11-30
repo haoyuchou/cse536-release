@@ -249,5 +249,5 @@ void trap_and_emulate_init(void) {
     /* Create and initialize all state for the VM */
     vm_state = get_vm_state();
     current_exe_mode = MACHINE;
-    printf("start emulating\n");
+    //printf("start emulating\n");
 }
