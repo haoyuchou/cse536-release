@@ -28,7 +28,7 @@ uint32 trap_instruction_emulation(struct instruction *trapInstruction);
 // printf("(EC at %p)\n", p->trapframe->epc);
 
 uint32 trap_and_emulate_ecall(void){
-    struct proc *p = myproc();
+    //struct proc *p = myproc();
     struct instruction trap_instruction = retrieve_trap_instruction();
     //printf("(EC at %p)\n", p->trapframe->epc);
     printf("(EC at %p)\n", trap_instruction.addr);
@@ -97,13 +97,13 @@ uint32 trap_instruction_emulation(struct instruction *trapInstruction){
     }else if (trapInstruction->funct3 == 0x2){
     // csrr
         return emulate_csrr(trapInstruction);
-    }else if (trapInstruction == 0x302){
+    }else if (trapInstruction->uimm == 0x302){
     // mret
         return emulate_mret(trapInstruction);
-    }else if (trapInstruction == 0x102){
+    }else if (trapInstruction->uimm == 0x102){
     // sret
         return emulate_sret(trapInstruction);
-    }else if (trapInstruction == 0x0){
+    }else if (trapInstruction->uimm == 0x0){
         return emulate_ecall(trapInstruction);
     }else{
         panic("This instruction is not emulated\n");
