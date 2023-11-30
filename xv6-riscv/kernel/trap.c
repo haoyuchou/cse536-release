@@ -61,7 +61,7 @@ usertrap(void)
     }else if(scause_num == 8){
     // redirect to trap_and_emulate function
       emulated_res = trap_and_emulate_ecall();
-      printf('redirect to trap and emulate ecall');
+      printf("redirect to trap and emulate ecall");
     }
 
     if(emulated_res == 1){
