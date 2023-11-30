@@ -140,4 +140,5 @@ uint64 read_registers(uint64 code){
         }else if (code == 31){
             return p->trapframe->t6;
         }
+        return -1;
 }
