@@ -57,9 +57,11 @@ usertrap(void)
     uint32 emulated_res;
     if (scause_num == 2){
       emulated_res = trap_and_emulate();
+      printf("redirect to trap and emulate\n");
     }else if(scause_num == 8){
     // redirect to trap_and_emulate function
       emulated_res = trap_and_emulate_ecall();
+      printf('redirect to trap and emulate ecall');
     }
 
     if(emulated_res == 1){
