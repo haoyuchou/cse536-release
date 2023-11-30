@@ -23,7 +23,7 @@ void setup_privilege_regs(struct vm_virtual_state *state);
 struct vm_virtual_state get_vm_state(void) {
     struct vm_virtual_state vm_state;
 
-    setup_privi_regs(&vm_state);
+    setup_privilege_reg(&vm_state);
 
     return vm_state;
 }
