@@ -162,7 +162,7 @@ void copy_for_US_exe(void){
     struct proc *p = myproc();
     p->vm_pagetable = uvmcreate();
     //uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
-    p->pagetable = uvmcreate();
+    p->pagetable = proc_pagetable(p);
     
     pmp_region_preparation();
 }
