@@ -155,54 +155,72 @@ uint32 emulate_mret(struct instruction* trapInstruction){
     return 1;
 }
 
-void pmp_region_preparation(void); 
+void create_pmp_region(void); 
 
 void copy_for_US_exe(void){
     // backup page table
     struct proc *p = myproc();
     p->vm_pagetable = uvmcreate();
-    //uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
-    p->pagetable = proc_pagetable(p);
+    uvmcopy(p->pagetable, p->vm_pagetable, p->sz);
     
-    pmp_region_preparation();
+    create_pmp_region();
 }
 
 // q5
 uint64 PTE_permission(uint64 pmp_authenticate);
-void page_copy(uint64 sz, uint64 permission);
+uint64 permission_change(uint64 sz, uint64 permission);
+void page_removal(uint64 lower);
 
-void pmp_region_preparation(void) {
+void create_pmp_region(void) {
     //struct proc *p = myproc();
     struct vm_reg *pmpconfig0 = get_privilege_reg(&vm_state, 0x3a0);
-    struct vm_reg *pmpaddr0 = get_privilege_reg(&vm_state, 0x3b0);
+    //struct vm_reg *pmpaddr0 = get_privilege_reg(&vm_state, 0x3b0);
 
     uint64 pmp_authentication = pmpconfig0->val & 3;
     uint64 permission = PTE_permission(pmp_authentication);
+    struct vm_reg *pmpaddr0 = get_privilege_reg(&vm_state, 0x3b0);
     uint64 upper = (pmpaddr0->val << 2);
+    uint64 lower = 0x80000000;
     // for a created VM, the VMM automatically provides a 4MB memory region from 0x80000000 - 0x80400000.
-    if(upper < 0x80000000) {
-        return;
+    if(upper > 0x80000000) {
+        lower = permission_change(upper, permission);
     }
 
-    page_copy(upper, permission);
+    page_removal(lower);
 }
 
-void page_copy(uint64 upper, uint64 permission){
+uint64 permission_change(uint64 upper, uint64 permission){
     struct proc *p = myproc();
+    pte_t *pte;
+    uint64 phys_addr;
+    uint64 start;
 
-    for (uint64 start = 0x80000000; start<upper; start += PGSIZE){
-        uint64 phys_addr = walkaddr(p->vm_pagetable, start);
-        mappages(p->pagetable, start, PGSIZE, phys_addr, permission);
+    for (start = 0x80000000; start<upper; start += PGSIZE){
+        pte = walk(p->pagetable, start, 0);
+        phys_addr = PTE2PA(*pte);
+        *pte = PA2PTE(phys_addr) | permission;
+        //mappages(p->pagetable, start, PGSIZE, phys_addr, permission);
+    }
+    return start;
+}
+
+void page_removal(uint64 lower){
+    // on the newly-created page ta- bles 
+    //(which we will call PMP tables), the VMM should unmap the regions 
+    // of memory that are inaccessible (based on the PMP registers)
+    struct proc *p = myproc();
+    for(uint64 start = lower; start<0x80400000; start += PGSIZE){
+        uvmunmap(p->pagetable, start, 1, 0);
     }
 }
 
 uint64 PTE_permission(uint64 pmp_authenticate){
     if (pmp_authenticate == 1){
-        return PTE_R;
+        return PTE_U | PTE_V | PTE_R;
     }else if(pmp_authenticate == 2){
-        return PTE_W;
+        return PTE_U | PTE_V | PTE_W;
     }else{
-        return PTE_U | PTE_R | PTE_W | PTE_X;
+        return PTE_U | PTE_V | PTE_R | PTE_W | PTE_X;
     }
 }
 
